@@ -1,5 +1,5 @@
 //	ハードウェアスイッチ
-//	『昼夜逆転』工作室	http://jsdiy.starfree.jp
+//	『昼夜逆転』工作室	https://github.com/jsdiy
 //	2025/01 - 2025/09	@jsdiy
 
 #include <Arduino.h>

@@ -1,5 +1,5 @@
 //	ハードウェアスイッチ
-//	『昼夜逆転』工作室	http://jsdiy.starfree.jp
+//	『昼夜逆転』工作室	https://github.com/jsdiy
 //	2025/01	@jsdiy
 //	2025/01	AVR版(2019/01)を移植、ReleaseとOffの意味を入れ替え
 //	2025/09	ESP32版としてmills()利用へ改造
