@@ -2,9 +2,10 @@
 //	『昼夜逆転』工作室	http://jsdiy.starfree.jp
 //	2025/01	@jsdiy
 //	2025/01	AVR版(2019/01)を移植、ReleaseとOffの意味を入れ替え
+//	2025/09	ESP32版としてmills()利用へ改造
 /*
-	| gpio|--<SW>--+		SW: button switch, slide switch, etc.
-	|     |        |		turn on:LOW, off:HIGH
+	| gpio|--<SW>--+	SW: button switch, slide switch, etc.
+	|     |        |	turn on:LOW, off:HIGH
 	|ESP32|       GND
 */
 
@@ -26,15 +27,16 @@ enum	class	ESwState	: uint8_t
 class	HwSwitch
 {
 private:
-	static	const	uint8_t	SwOn = LOW,	SwOff = HIGH;
-	gpio_num_t	swPin = GPIO_NUM_NC;
-	uint8_t		prevPinState;	//値はSwOn/SwOffを取る
-	uint16_t	longHoldThreshold;	//Status()が何回呼ばれたら「長押し」とするか
-	uint16_t	holdCount;
+	static	const	int8_t	SwOn = LOW,	SwOff = HIGH;
+	static	const	ulong	DebounceTime = 50;
+	gpio_num_t	swPin;
+	int8_t	prevPinState;	//値はSwOn/SwOffを取る
+	ulong	prevMills;
+	ulong	longHoldThresholdTime, holdStartTime;
 
 public:
-	HwSwitch(void) {}	//この場合は後でInitialize()を呼ぶこと
-	HwSwitch(gpio_num_t swPin, uint16_t longHoldThreshold = 0) { Initialize(swPin, longHoldThreshold); }
-	void	Initialize(gpio_num_t swPin, uint16_t longHoldThreshold = 0);
+	HwSwitch(void) {}	//この場合は後でInitialize()を呼ぶ必要がある
+	HwSwitch(gpio_num_t swPin, ulong longHoldThresholdMSec = 0) { Initialize(swPin, longHoldThresholdMSec); }
+	void	Initialize(gpio_num_t swPin, ulong longHoldThresholdMSec = 0);
 	ESwState	State(void);
 };

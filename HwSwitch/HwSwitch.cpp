@@ -1,49 +1,50 @@
 //	ハードウェアスイッチ
 //	『昼夜逆転』工作室	http://jsdiy.starfree.jp
-//	2025/01	@jsdiy
+//	2025/01 - 2025/09	@jsdiy
 
 #include <Arduino.h>
 #include "HwSwitch.hpp"
 
 //初期化
-void	HwSwitch::Initialize(gpio_num_t swPin, uint16_t longHoldThreshold)
+void	HwSwitch::Initialize(gpio_num_t swPin, ulong longHoldThresholdMSec)
 {
 	this->swPin = swPin;
 	pinMode(swPin, INPUT_PULLUP);
+	longHoldThresholdTime = longHoldThresholdMSec;
 	prevPinState = SwOff;
-
-	this->longHoldThreshold = longHoldThreshold;
-	holdCount = 0;
+	prevMills = 0;
 }
 
 //ボタンの押下状態を判定する
-//・一定の間隔で呼び出し、直前の押下状態と比較することで現在の状態を判定する。
-//・例えば1秒間隔で呼び出せばチャタリング対策は不要。
 ESwState	HwSwitch::State(void)
 {
-	uint8_t nowPinState = digitalRead(swPin);
-	ESwState swState;
+	int8_t nowPinState;
+	auto nowMills = millis();
+	if (DebounceTime < nowMills - prevMills)
+	{
+		nowPinState = digitalRead(swPin);
+		prevMills = nowMills;
+	}
+	else
+	{
+		nowPinState = prevPinState;
+	}
 
+	ESwState swState;
 	if (prevPinState == SwOff && nowPinState == SwOn)
 	{
 		swState = ESwState::On;
+		holdStartTime = nowMills;
 	}
 	else if (prevPinState == SwOn && nowPinState == SwOn)
 	{
-		if (holdCount < longHoldThreshold)
-		{
-			swState = ESwState::ShortHold;
-			holdCount++;
-		}
-		else
-		{
-			swState = ESwState::LongHold;
-		}
+		swState = (nowMills - holdStartTime < longHoldThresholdTime)
+			? ESwState::ShortHold : ESwState::LongHold;
 	}
 	else if (prevPinState == SwOn && nowPinState == SwOff)
 	{
 		swState = ESwState::Release;
-		holdCount = 0;
+		holdStartTime = 0;
 	}
 	else	//(prevPinState == SwOff && nowPinState == SwOff)
 	{
