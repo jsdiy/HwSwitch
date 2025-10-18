@@ -15,6 +15,7 @@ void	setup(void)
 void	loop(void)
 {
 	ESwState swState = buttonSw.State();
+
 	switch (swState)
 	{
 	case ESwState::On:			Serial.println("On");			break;
@@ -24,6 +25,11 @@ void	loop(void)
 	case ESwState::Off:			Serial.println("Off");			break;
 	default:	break;
 	}
+
+	if (buttonSw.IsOn()) { Serial.println("IsOn"); }
+	if (buttonSw.IsOff()) { Serial.println("IsOff"); }
+	if (buttonSw.Clicked()) { Serial.println("Clicked"); }
+	if (buttonSw.Holding()) { Serial.println("Holding"); }
 
 	delay(100);
 }
