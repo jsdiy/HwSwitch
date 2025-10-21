@@ -30,18 +30,18 @@ class	HwSwitch
 {
 private:
 	static	const	int8_t	SwOn = LOW,	SwOff = HIGH;
-	static	const	ulong	DebounceTimeMills = 50;
+	static	const	ulong	DebounceTimeMillis = 50;
 	static	const	uint8_t	SwOnMask = 0x10;
 	gpio_num_t	swPin;
 	int8_t	prevPinState;	//値はSwOn/SwOffを取る
-	ulong	prevMills;
+	ulong	prevMillis;
 	ulong	longHoldThresholdTime, holdStartTime;
 	ESwState	currentSwState;
 
 public:
 	HwSwitch(void) {}	//この場合は後でInitialize()を呼ぶ必要がある
-	HwSwitch(gpio_num_t swPin, ulong longHoldThresholdMills = 0) { Initialize(swPin, longHoldThresholdMills); }
-	void	Initialize(gpio_num_t swPin, ulong longHoldThresholdMills = 0);
+	HwSwitch(gpio_num_t swPin, ulong longHoldThresholdMillis = 0) { Initialize(swPin, longHoldThresholdMillis); }
+	void	Initialize(gpio_num_t swPin, ulong longHoldThresholdMillis = 0);
 	ESwState	State(void);
 	bool	Clicked(void) { return (currentSwState == ESwState::Release); }
 	bool	Holding(void) { return (currentSwState == ESwState::LongHold); }

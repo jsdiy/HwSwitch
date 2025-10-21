@@ -10,12 +10,12 @@
 #include "HwSwitch.hpp"
 
 //初期化
-void	HwSwitch::Initialize(gpio_num_t swPin, ulong longHoldThresholdMills)
+void	HwSwitch::Initialize(gpio_num_t swPin, ulong longHoldThresholdMillis)
 {
 	this->swPin = swPin;
 	pinMode(swPin, INPUT_PULLUP);
-	longHoldThresholdTime = longHoldThresholdMills;
-	prevMills = 0;
+	longHoldThresholdTime = longHoldThresholdMillis;
+	prevMillis = 0;
 	prevPinState = SwOff;
 	currentSwState = ESwState::Off;
 }
@@ -24,11 +24,11 @@ void	HwSwitch::Initialize(gpio_num_t swPin, ulong longHoldThresholdMills)
 ESwState	HwSwitch::State(void)
 {
 	int8_t nowPinState;
-	auto nowMills = millis();
-	if (DebounceTimeMills < nowMills - prevMills)
+	auto nowMillis = millis();
+	if (DebounceTimeMillis < nowMillis - prevMillis)
 	{
 		nowPinState = digitalRead(swPin);
-		prevMills = nowMills;
+		prevMillis = nowMillis;
 	}
 	else
 	{
@@ -38,11 +38,11 @@ ESwState	HwSwitch::State(void)
 	if (prevPinState == SwOff && nowPinState == SwOn)
 	{
 		currentSwState = ESwState::On;
-		holdStartTime = nowMills;
+		holdStartTime = nowMillis;
 	}
 	else if (prevPinState == SwOn && nowPinState == SwOn)
 	{
-		currentSwState = (nowMills - holdStartTime < longHoldThresholdTime)
+		currentSwState = (nowMillis - holdStartTime < longHoldThresholdTime)
 			? ESwState::ShortHold : ESwState::LongHold;
 	}
 	else if (prevPinState == SwOn && nowPinState == SwOff)
